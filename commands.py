@@ -14,9 +14,10 @@ async def helpme(cnx):
 async def makelobby(cnx):
     try:
         add_lobby(cnx.guild.id, cnx.channel.id)
+        rules = "Rule 1: Don't be a dick \n" + "Rule 2: Have fun"
         await cnx.send("This channel is lobby now!")
         await cnx.send("Here the rules:")
-        await cnx.send("Rule №1: Don't be a dick")
+        await cnx.send(f"```{rules}```")
         await cnx.send("If you accept, type '-!join' for members or '-!guest' for guests")
     except Exception as error:
         await cnx.send(str(error))
