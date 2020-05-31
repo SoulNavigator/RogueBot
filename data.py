@@ -1,10 +1,29 @@
 import json
 from os.path import isfile
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
 
 datafile = 'littlebot\data2.json'
 
+Base = declarative_base()
+
+class Guild(Base):
+
+    __tablename__ = 'honhon'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    lobby = Column(Integer)
+    candidate = Column(Integer)
+    meme = Column(Integer)
+
+
 # Переписать
 def init():
+    engine = create_engine('sqlite:///littlebot/data.db')
+    Base.metadata.create_all(engine)
+
+
     if(isfile(datafile)):
         pass
     else:
@@ -13,6 +32,8 @@ def init():
         }
         with open(datafile, 'w') as file:
             json.dump(data, file)
+
+init()
 
 def guild_exists(guild_id) -> bool:
     with open(datafile, 'r') as file:
