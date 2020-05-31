@@ -1,6 +1,6 @@
 from bot import runbot
 import config
-from data import init
+from datamanager import init
 
 if __name__ == "__main__":
     init()

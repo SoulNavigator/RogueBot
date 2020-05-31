@@ -10,11 +10,8 @@ class RogueBot(Bot):
 def __commands(bot : RogueBot):
     bot.add_command(commands.sayhello)
     bot.add_command(commands.register)
-    bot.add_command(commands.makethislobby)
-    bot.add_command(commands.echorole)
 
 def runbot(token, prefix):
-    global __bot
     bot = RogueBot(command_prefix=prefix)
     __commands(bot)
 

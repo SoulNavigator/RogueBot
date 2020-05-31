@@ -2,26 +2,53 @@ import json
 from os.path import isfile
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 datafile = 'littlebot\data2.json'
+class DataManager():
+    Base = declarative_base()
+    engine = None
 
-Base = declarative_base()
+    class Guild(Base):
+        __tablename__ = 'guilds'
 
-class Guild(Base):
+        id = Column(Integer, primary_key=True)
+        name = Column(String)
+        lobby = Column(Integer)
+        candidate = Column(Integer)
+        meme = Column(Integer)
+        
+        def __init__(self, id:int, name:str='Test', lobby:int=-1, candidate:int=-1, meme:int=-1):
+            self.id = id
+            self.name = name
+            self.lobby = lobby
+            self.candidate = candidate
+            self.meme = meme
 
-    __tablename__ = 'honhon'
+    def init(self):
+        self.engine = create_engine('sqlite:///littlebot/data.db')
+        self.Base.metadata.create_all(self.engine)
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    lobby = Column(Integer)
-    candidate = Column(Integer)
-    meme = Column(Integer)
+    def guild_exist(self, guild_id):
+        Session = sessionmaker(bind=self.engine)
+
+        pass
+    
+    def add_guild(self, guild_id:int):
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        test_guild = self.Guild(id=guild_id)
+        # pylint: disable=fixme, no-member
+        session.add()
+        session.commit()
 
 
 # Переписать
 def init():
+    global engine
     engine = create_engine('sqlite:///littlebot/data.db')
-    Base.metadata.create_all(engine)
+
+    #Base.metadata.create_all(engine)
 
 
     if(isfile(datafile)):
@@ -33,9 +60,10 @@ def init():
         with open(datafile, 'w') as file:
             json.dump(data, file)
 
-init()
-
 def guild_exists(guild_id) -> bool:
+
+
+
     with open(datafile, 'r') as file:
         json_file = json.load(file)
         guilds = json_file['guilds']
@@ -93,3 +121,8 @@ def set_meme_role(guild_id, role_id):
         
         with open(datafile, 'w') as file:
             json.dump(json_file, file)
+
+
+DM = DataManager()
+DM.init()
+DM.add_guild()
