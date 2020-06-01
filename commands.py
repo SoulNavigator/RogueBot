@@ -1,6 +1,6 @@
 from discord.ext import commands
 from discord.utils import get
-from datamanager import add_guild, add_lobby, remove_guild
+from datamanager import add_guild, add_lobby, remove_guild, set_member, get_member
 
 rules = "Rule 1: Don't be a dick \n" + "Rule 2: Have fun"
 
@@ -18,6 +18,14 @@ async def makelobby(ctx):
         await ctx.send("If you accept, type '-!join' for members or '-!guest' for guests")
     except Exception as error:
         await ctx.send(str(error))
+
+@commands.command()
+async def makemember(ctx, role):
+    member_role = get(ctx.guild.roles, name=role)
+    if member_role:
+        set_member(ctx.guild.id, member_role.id)
+        await ctx.send(f"{member_role} is now a member role!")
+
     
 async def on_guild_join(guild):
     add_guild(guild.id, guild.name)
@@ -28,8 +36,22 @@ async def on_guild_remove(guild):
 async def on_message(msg):
     channel = msg.channel
     content = msg.content
-
     if rules in content:
         print(msg.guild.name)
         await msg.add_reaction(yes_emoji)
         await msg.add_reaction(no_emoji)
+
+async def on_reaction_add(reaction, author):
+    if not author.bot:
+        content = reaction.message.content
+        guild = reaction.message.guild
+        member_role = get(guild.roles, id=get_member(guild.id))
+
+        if rules in content:
+            if reaction.emoji==yes_emoji:
+                print("It's a yes emoji")
+                await reaction.remove(author)
+                await author.add_roles(member_role)
+            if reaction.emoji==no_emoji:
+                print("It's a no emoji")
+                await reaction.remove(author)

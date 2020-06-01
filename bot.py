@@ -12,10 +12,12 @@ class RogueBot(Bot):
 # All bot's commands here
 def __commands(bot : RogueBot):
     bot.add_command(commands.makelobby)
+    bot.add_command(commands.makemember)
 
     bot.add_listener(commands.on_guild_join)
     bot.add_listener(commands.on_guild_remove)
     bot.add_listener(commands.on_message)
+    bot.add_listener(commands.on_reaction_add)
 
 
 def runbot(token, prefix):

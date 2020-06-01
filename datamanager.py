@@ -13,15 +13,15 @@ class Guild(Base):
     name = Column(String)
     lobby = Column(Integer)
     # Special roles IDs
-    candidate = Column(Integer)
+    member = Column(Integer)
     guest = Column(Integer)
     meme = Column(Integer)
     
-    def __init__(self, id:int, name:str='Test', lobby:int=-1, candidate:int=-1, guest:int=-1, meme:int=-1):
+    def __init__(self, id:int, name:str='Test', lobby:int=-1, member:int=-1, guest:int=-1, meme:int=-1):
         self.id = id
         self.name = name
         self.lobby = lobby
-        self.candidate = candidate
+        self.member = member
         self.guest = guest
         self.meme = meme
 
@@ -41,6 +41,32 @@ def add_guild(guild_id:int, guild_name:str):
     except IntegrityError:
         raise Exception("Sorry, but this guild is already registered! :s")
 
+
+def set_member(guild_id:int, role_id:int):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # pylint: disable=fixme, no-member
+    try:
+        current_guild = session.query(Guild).get(guild_id)
+        current_guild.member = role_id
+        session.add(current_guild)
+        session.commit()
+    except:
+        Exception("Couldn't set this role as a member")
+
+
+def get_member(guild_id:int):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # pylint: disable=fixme, no-member
+    try:
+        current_guild = session.query(Guild).get(guild_id)
+        session.commit()
+        return current_guild.member
+    except:
+        Exception("Member role doesn't exist yet")
+
+
 def remove_guild(guild_id):
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -48,6 +74,7 @@ def remove_guild(guild_id):
     current_guild = session.query(Guild).get(guild_id)
     session.delete(current_guild)
     session.commit()
+
 
 def add_lobby(guild_id:int, channel_id:int):
     Session = sessionmaker(bind=engine)
