@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +16,8 @@ class Guild(Base):
     member = Column(Integer)
     guest = Column(Integer)
     meme = Column(Integer)
+
+    rules = Column(Text)
     
     def __init__(self, id:int, name:str='Test', lobby:int=-1, member:int=-1, guest:int=-1, meme:int=-1):
         self.id = id
@@ -24,6 +26,7 @@ class Guild(Base):
         self.member = member
         self.guest = guest
         self.meme = meme
+        self.rules = "``` 1: Don't be a dick \n 2: Have fun```"
 
 def init():
     Base.metadata.create_all(engine)
@@ -87,3 +90,28 @@ def add_lobby(guild_id:int, channel_id:int):
         session.commit()
     except:
         Exception("This guild probably doesn't exist")
+
+
+def set_rules(guild_id, rules):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # pylint: disable=fixme, no-member
+    try:
+        current_guild = session.query(Guild).get(guild_id)
+        current_guild.rules = rules
+        session.add(current_guild)
+        session.commit()
+    except:
+        Exception("Couldn't add rules")
+
+
+def get_rules(guild_id):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # pylint: disable=fixme, no-member
+    try:
+        current_guild = session.query(Guild).get(guild_id)
+        session.commit()
+        return current_guild.rules
+    except:
+        Exception("Can't find rules")
